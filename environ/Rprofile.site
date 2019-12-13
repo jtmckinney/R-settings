@@ -1,0 +1,51 @@
+# Things you might want to change
+
+# options(papersize="a4")
+# options(editor="notepad")
+# options(pager="internal")
+options(stringsAsFactors=FALSE)
+options(scipen=10)
+
+# set the default help type
+# options(help_type="text")
+options(help_type="html")
+  
+
+# set a site library
+# .Library.site <- file.path(chartr("\\", "/", R.home()), "site-library")
+
+# set a CRAN mirror
+# local({r <- getOption("repos")
+#       r["CRAN"] <- "http://my.local.cran"
+#       options(repos=r)})
+
+
+  utils::rc.settings(ipck = TRUE)
+  
+  # function to install/load packages
+  load_pkgs <- function(...) {
+    # function to load single package
+    load_pkg <- function(...) {
+      args <- rlang::ensyms(...)
+      pkg <- unlist(purrr::map(args, rlang::as_string))
+      suppressWarnings(
+        suppressPackageStartupMessages(
+          library(pkg, character.only = TRUE)))
+    }
+    args <- rlang::ensyms(...)
+    pkgs <- unlist(
+      strsplit(
+        unlist(paste(purrr::map(args, rlang::as_string), collapse = ", "))
+        , ", ", fixed = T))
+    curr_pkgs <- as.vector(utils::installed.packages()[,1])
+    needed <- pkgs[!pkgs %in% curr_pkgs]
+    options(warn = -1)
+    if (length(needed) > 0) install.packages(needed)
+    invisible(sapply(pkgs, load_pkg))
+    options(warn = 0)
+  }
+  
+  # load important packages
+  options(tidyverse.quiet = TRUE)
+  load_pkgs(tidyverse, ggplot2, data.table)
+
