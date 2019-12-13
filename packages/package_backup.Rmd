@@ -8,7 +8,7 @@ output: html_document
 ```{r setup}
 type <- c("save", "load")[2]
 
-install.packages("rstudioapi")
+if (!"rstudioapi" %in% unique(dir(.libPaths()))) install.packages("rstudioapi")
 list_dir <- dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(list_dir)
 ```
